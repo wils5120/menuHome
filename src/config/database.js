@@ -9,7 +9,7 @@ mongoose.connect(conecctionUrl, {
     useNewUrlParser: true,
     useUnifiedTopology:true
 }).then((response) => {
-    console.log("aca respuesta then")
+    console.log("Conexión a base de datos completada")
 }).catch(err => { 
     console.log("deajte ver error", err)
 })

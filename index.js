@@ -79,7 +79,7 @@ app.put('/api/updateMenu/:id', (request, response, next) => {
 
 app.use(handleErrors)
 
-const PORT = PORT
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+const PORTLISTEN = PORT.PORT
+app.listen(PORTLISTEN, () => {
+    console.log(`Server running on port ${PORTLISTEN}`)
 })
