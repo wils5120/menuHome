@@ -4,6 +4,7 @@ const express = require('express')
 const app = express()
 const Menu = require('./src/models/Menu.model')
 const handleErrors = require('./src/middleware/handleErrors')
+const PORT = require('./src/config/configPort')
 
 
 app.use(express.json())
@@ -78,7 +79,7 @@ app.put('/api/updateMenu/:id', (request, response, next) => {
 
 app.use(handleErrors)
 
-const PORT = 3005
+const PORT = PORT
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
