@@ -2,12 +2,13 @@ require('./src/config/database')
 
 const express = require('express')
 const app = express()
+const fs = require('fs');
 const Menu = require('./src/models/Menu.model')
 const handleErrors = require('./src/middleware/handleErrors')
 const PORT = require('./src/config/configPort')
 
 
-app.use(express.json())
+app.use(express.json({limit: "50mb"}))
 
 
 app.get('/api/allMenu', (request, response) => {
@@ -35,25 +36,43 @@ app.get('/api/allMenu/:id', (request, response, next) => {
 
 app.post('/api/create', (request, response) => {
     const body = request.body
-    
-    const newMenu = new Menu({
-        name: body.name,
-        done: body.done,
-        image: body.image,
-        specific: body.specific,
-        description: body.description,
-        lastOneDate:new Date().toISOString()
-    })
-
-    if(!body.name){
-        return response.status(400).json({
-            error:'requiered name'
+    const base64Image = body.image.split(';base64,').pop();
+    console.log("base64Image",)
+    fs.writeFile(`public/images/${body.name}.jpg`, base64Image, { encoding: 'base64' }, function(err) {
+        console.log(`Image ${body.name}.jpg created`);
+        console.log("base64Image", base64Image)
+        const newMenu = new Menu({
+            name: body.name,
+            done: body.done,
+            image: base64Image,
+            specific: body.specific,
+            description: body.description,
+            lastOneDate:new Date().toISOString()
         })
+        console.log("nuevo objeto", newMenu)
+        if(!body.name){
+            return response.status(400).json({
+                error:'requiered name'
+            })
+        }
+     
+        newMenu.save().then(saveMenu => {
+            response.json(saveMenu)
+        })
+      });
+
+})
+
+
+app.delete('/api/delete/:id', (request, response) =>{
+    const  id  = request.params
+    if(id){
+        Menu.deleteOne({_id: id.id}).then(res => {
+            return response.json(res)
+        }).catch(err => console.log(err))
+    }else{
+        response.status(404).end()
     }
- 
-    newMenu.save().then(saveMenu => {
-        response.json(saveMenu)
-    })
 })
 
 

@@ -11,7 +11,7 @@ mongoose.connect(conecctionUrl, {
 }).then((response) => {
     console.log("Conexión a base de datos completada")
 }).catch(err => { 
-    console.log("deajte ver error", err)
+    console.log("no se esta conectando correctamente a la BD", err)
 })
 
 
