@@ -12,7 +12,9 @@ app.use(express.json({limit: "50mb"}))
 
 app.get('/api/allMenu/:date', (request, response) => {
     let { date } = request.params
+    console.log("jumm pinche life", date)
     let dateConsult = moment(parseInt(date)).format("MM-DD-YYYY")  
+    console.log("jumm pinche life dateConsult dateConsult", dateConsult)
     Menu.find({lastOneDate: {$lt: new Date(dateConsult)}}).then(res =>{
         response.json(res)
     }
