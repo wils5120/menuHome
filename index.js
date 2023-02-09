@@ -6,14 +6,14 @@ const fs = require('fs');
 const Menu = require('./src/models/Menu.model')
 const handleErrors = require('./src/middleware/handleErrors')
 const PORT = require('./src/config/configPort')
-
-
+var moment = require('moment');
 app.use(express.json({limit: "50mb"}))
 
 
 app.get('/api/allMenu/:date', (request, response) => {
     let { date } = request.params
-    Menu.find({lastOneDate: {$lt: new Date(date)}}).then(res =>{
+    let dateConsult = moment(parseInt(date)).format("MM-DD-YYYY")  
+    Menu.find({lastOneDate: {$lt: new Date(dateConsult)}}).then(res =>{
         response.json(res)
     }
 )
