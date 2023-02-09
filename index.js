@@ -11,17 +11,17 @@ const PORT = require('./src/config/configPort')
 app.use(express.json({limit: "50mb"}))
 
 
-app.get('/api/allMenu', (request, response) => {
-    Menu.find({}).then(res =>{
+app.get('/api/allMenu/:date', (request, response) => {
+    let { date } = request.params
+    Menu.find({lastOneDate: {$lt: new Date(date)}}).then(res =>{
         response.json(res)
-    })
+    }
+)
 })
 
 
 app.get('/api/allMenu/:id', (request, response, next) => {
     const { id } = request.params
-
-    
     Menu.findById(id).then(res =>{
         if(res){
             return response.json(res)
@@ -37,25 +37,20 @@ app.get('/api/allMenu/:id', (request, response, next) => {
 app.post('/api/create', (request, response) => {
     const body = request.body
     const base64Image = body.image.split(';base64,').pop();
-    console.log("base64Image",)
     fs.writeFile(`public/images/${body.name}.jpg`, base64Image, { encoding: 'base64' }, function(err) {
-        console.log(`Image ${body.name}.jpg created`);
-        console.log("base64Image", base64Image)
         const newMenu = new Menu({
             name: body.name,
             done: body.done,
             image: base64Image,
             specific: body.specific,
             description: body.description,
-            lastOneDate:new Date().toISOString()
+            lastOneDate:new Date()
         })
-        console.log("nuevo objeto", newMenu)
         if(!body.name){
             return response.status(400).json({
                 error:'requiered name'
             })
         }
-     
         newMenu.save().then(saveMenu => {
             response.json(saveMenu)
         })
