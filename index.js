@@ -20,7 +20,7 @@ app.get('/api/allMenu/:date', (request, response) => {
 })
 
 
-app.get('/api/allMenu/:id', (request, response, next) => {
+app.get('/api/allMenu/by/:id', (request, response, next) => {
     const { id } = request.params
     Menu.findById(id).then(res =>{
         if(res){
