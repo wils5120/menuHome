@@ -12,10 +12,15 @@ app.use(express.json({limit: "50mb"}))
 
 app.get('/api/allMenu/:date', (request, response) => {
     let { date } = request.params
-    console.log("jumm pinche life", date)
-    let dateConsult = moment(parseInt(date)).format("MM-DD-YYYY")  
-    console.log("jumm pinche life dateConsult dateConsult", dateConsult)
+    let dateConsult = moment(parseInt(date)).format("MM-DD-YYYY")
     Menu.find({lastOneDate: {$lt: new Date(dateConsult)}}).then(res =>{
+        response.json(res)
+    }
+)
+})
+
+app.get('/api/allMenu/', (request, response) => {
+    Menu.find().then(res =>{
         response.json(res)
     }
 )
@@ -38,26 +43,22 @@ app.get('/api/allMenu/by/:id', (request, response, next) => {
 
 app.post('/api/create', (request, response) => {
     const body = request.body
-    const base64Image = body.image.split(';base64,').pop();
-    fs.writeFile(`public/images/${body.name}.jpg`, base64Image, { encoding: 'base64' }, function(err) {
-        const newMenu = new Menu({
-            name: body.name,
-            done: body.done,
-            image: base64Image,
-            specific: body.specific,
-            description: body.description,
-            lastOneDate:new Date()
+    const newMenu = new Menu({
+        name: body.name,
+        done: body.done,
+        image: body.image,
+        specific: body.specific,
+        description: body.description,
+        lastOneDate:new Date("01-01-2020")
+    })
+    if(!body.name){
+        return response.status(400).json({
+            error:'requiered name'
         })
-        if(!body.name){
-            return response.status(400).json({
-                error:'requiered name'
-            })
-        }
-        newMenu.save().then(saveMenu => {
-            response.json(saveMenu)
-        })
-      });
-
+    }
+    newMenu.save().then(saveMenu => {
+        response.json(saveMenu)
+    })
 })
 
 
@@ -84,7 +85,7 @@ app.put('/api/updateMenu/:id', (request, response, next) => {
         image: body.image,
         specific: body.specific,
         description: body.description,
-        lastOneDate:new Date().toISOString()
+        lastOneDate:body.lastOneDate
     }
 
     Menu.findByIdAndUpdate(id, updateMenu, {new: true}).then(res =>{
